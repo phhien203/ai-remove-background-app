@@ -7,6 +7,7 @@ import { FaTrashAlt } from "react-icons/fa";
 export default function Home() {
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState("");
+  const [outputImage, setOutputImage] = React.useState<string | null>(null);
 
   const acceptedFileTypes = {
     "image/jpeg": [".jpeg", ".png"],
@@ -20,6 +21,9 @@ export default function Home() {
       setError("Please upload a PNG or JPG image less than 5MB");
       return;
     }
+
+    handleDelete();
+    setOutputImage(null);
 
     console.log(acceptedFiles);
     setError("");
@@ -39,6 +43,10 @@ export default function Home() {
 
   const handleDelete = () => {
     setFile(null);
+  };
+
+  const handleSubmit = async () => {
+    setOutputImage("https://via.placeholder.com/150");
   };
 
   return (
@@ -78,20 +86,24 @@ export default function Home() {
 
         {file && (
           <div className="flex items-center justify-center mt-2">
-            <button className="text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r rounded-lg px-4 py-2 text-center mb-2">
+            <button
+              className="text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r rounded-lg px-4 py-2 text-center mb-2"
+              onClick={handleSubmit}
+            >
               Remove background
             </button>
           </div>
         )}
       </section>
 
+      {/* Images Section */}
       <section className="grid grid-cols-2 gap-4 mt-4">
         {file && (
           <>
             <div className="relative">
               <img
-                src={URL.createObjectURL(file)}
                 alt={file.name}
+                src={URL.createObjectURL(file)}
                 className="w-full h-full object-cover"
               />
 
@@ -108,7 +120,13 @@ export default function Home() {
             </div>
 
             <div className="flex items-center justify-center">
-              Output image here
+              {outputImage && (
+                <img
+                  alt="output"
+                  src={outputImage}
+                  className="object-cover w-full h-full"
+                />
+              )}
             </div>
           </>
         )}
