@@ -2,13 +2,14 @@
 
 import React from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
+import { FaTrashAlt } from "react-icons/fa";
 
 export default function Home() {
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState("");
 
   const acceptedFileTypes = {
-    "image/jpeg": [".jpeg", "..png"],
+    "image/jpeg": [".jpeg", ".png"],
   };
 
   const maxFileSize = 5 * 1024 * 1024;
@@ -34,6 +35,10 @@ export default function Home() {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(size) / Math.log(k));
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + "" + sizes[i];
+  };
+
+  const handleDelete = () => {
+    setFile(null);
   };
 
   return (
@@ -89,6 +94,13 @@ export default function Home() {
                 alt={file.name}
                 className="w-full h-full object-cover"
               />
+
+              <button
+                className="absolute top-0 right-0 p-2 text-black bg-yellow-500 hover:bg-yellow-400"
+                onClick={() => handleDelete()}
+              >
+                <FaTrashAlt className="w-4 h-4 duration-300" />
+              </button>
 
               <div className="absolute left-0 right-0 bottom-0 bg-gray-900 bg-opacity-50 text-white text-md p-2">
                 {file.name} ({fileSize(file.size)})
