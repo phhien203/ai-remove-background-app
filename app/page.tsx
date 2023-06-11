@@ -8,6 +8,7 @@ export default function Home() {
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState("");
   const [outputImage, setOutputImage] = React.useState<string | null>(null);
+  const [base64Image, setBase64Image] = React.useState<string | null>(null);
 
   const acceptedFileTypes = {
     "image/jpeg": [".jpeg", ".png"],
@@ -28,6 +29,13 @@ export default function Home() {
     console.log(acceptedFiles);
     setError("");
     setFile(acceptedFiles[0]);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(acceptedFiles[0]);
+    reader.onload = () => {
+      const binaryStr = reader.result as string;
+      setBase64Image(binaryStr);
+    };
   };
 
   const fileSize = (size: number) => {
@@ -46,7 +54,21 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
-    setOutputImage("https://via.placeholder.com/150");
+    const response = await fetch("/api/replicate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: base64Image }),
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    setOutputImage(result.output);
   };
 
   return (
