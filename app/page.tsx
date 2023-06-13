@@ -1,14 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
 import { FaTrashAlt } from "react-icons/fa";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function Home() {
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState("");
   const [outputImage, setOutputImage] = React.useState<string | null>(null);
   const [base64Image, setBase64Image] = React.useState<string | null>(null);
+
+  const [loading, setLoading] = React.useState(false);
 
   const acceptedFileTypes = {
     "image/jpeg": [".jpeg", ".png"],
@@ -54,6 +58,7 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     const response = await fetch("/api/replicate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,10 +70,12 @@ export default function Home() {
 
     if (result.error) {
       setError(result.error);
+      setLoading(false);
       return;
     }
 
     setOutputImage(result.output);
+    setLoading(false);
   };
 
   return (
@@ -109,8 +116,11 @@ export default function Home() {
         {file && (
           <div className="flex items-center justify-center mt-2">
             <button
-              className="text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r rounded-lg px-4 py-2 text-center mb-2"
+              disabled={loading}
               onClick={handleSubmit}
+              className={`text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r rounded-lg px-4 py-2 text-center mb-2 ${
+                loading && "cursor-progress"
+              }`}
             >
               Remove background
             </button>
@@ -123,7 +133,9 @@ export default function Home() {
         {file && (
           <>
             <div className="relative">
-              <img
+              <Image
+                width={500}
+                height={400}
                 alt={file.name}
                 src={URL.createObjectURL(file)}
                 className="w-full h-full object-cover"
@@ -142,8 +154,20 @@ export default function Home() {
             </div>
 
             <div className="flex items-center justify-center">
+              {loading && (
+                <ThreeDots
+                  width="60"
+                  height="60"
+                  color="#eeeeee"
+                  visible={true}
+                  ariaLabel="three-dots-loading"
+                />
+              )}
+
               {outputImage && (
-                <img
+                <Image
+                  width={500}
+                  height={400}
                   alt="output"
                   src={outputImage}
                   className="object-cover w-full h-full"
