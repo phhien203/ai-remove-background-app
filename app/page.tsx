@@ -1,9 +1,10 @@
 "use client";
 
+import { saveAs } from "file-saver";
 import Image from "next/image";
 import React from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaDownload, FaTrashAlt } from "react-icons/fa";
 import { ThreeDots } from "react-loader-spinner";
 
 export default function Home() {
@@ -76,6 +77,10 @@ export default function Home() {
 
     setOutputImage(result.output);
     setLoading(false);
+  };
+
+  const handleDownload = () => {
+    saveAs(outputImage as string, "output.png");
   };
 
   return (
@@ -153,7 +158,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center relative">
               {loading && (
                 <ThreeDots
                   width="60"
@@ -165,13 +170,22 @@ export default function Home() {
               )}
 
               {outputImage && (
-                <Image
-                  width={500}
-                  height={400}
-                  alt="output"
-                  src={outputImage}
-                  className="object-cover w-full h-full"
-                />
+                <>
+                  <Image
+                    width={500}
+                    height={400}
+                    alt="output"
+                    src={outputImage}
+                    className="object-cover w-full h-full"
+                  />
+
+                  <button
+                    className="absolute top-0 right-0 p-3 text-black bg-yellow-500"
+                    onClick={() => handleDownload()}
+                  >
+                    <FaDownload className="w-6 h-6 duration-300" />
+                  </button>
+                </>
               )}
             </div>
           </>
