@@ -19,20 +19,18 @@ export default function Home() {
     "image/jpeg": [".jpeg", ".png"],
   };
 
-  const maxFileSize = 5 * 1024 * 1024;
+  const maxFileSize = 4 * 1024 * 1024;
 
   const onDrop = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     if (rejectedFiles.length > 0) {
       console.log(rejectedFiles);
-      setError("Please upload a PNG or JPG image less than 5MB");
+      setError("Please upload a PNG or JPG image less than 4MB");
       return;
     }
 
     handleDelete();
-    setOutputImage(null);
 
     console.log(acceptedFiles);
-    setError("");
     setFile(acceptedFiles[0]);
 
     const reader = new FileReader();
@@ -43,7 +41,7 @@ export default function Home() {
     };
   };
 
-  const fileSize = (size: number) => {
+  const fileSize = (size: number): string => {
     if (size === 0) {
       return "0 Bytes";
     }
@@ -54,8 +52,12 @@ export default function Home() {
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + "" + sizes[i];
   };
 
-  const handleDelete = () => {
+  const handleDelete = (): void => {
     setFile(null);
+    setOutputImage(null);
+    setBase64Image(null);
+    setError("");
+    setLoading(false);
   };
 
   const handleSubmit = async () => {
@@ -87,7 +89,7 @@ export default function Home() {
     <div className="max-w-3xl mx-auto my-10 px-4">
       {/* Header Section */}
       <section className="text-center mb-10">
-        <h1 className="font-semibold text-transparent text-5xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block bg-clip-text">
+        <h1 className="font-semibold text-transparent text-5xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block bg-clip-text leading-normal">
           Remove background
         </h1>
       </section>
@@ -123,7 +125,7 @@ export default function Home() {
             <button
               disabled={loading}
               onClick={handleSubmit}
-              className={`text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-r rounded-lg px-4 py-2 text-center mb-2 ${
+              className={`text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l rounded-lg px-4 py-2 mt-3 text-center mb-2 ${
                 loading && "cursor-progress"
               }`}
             >
@@ -134,7 +136,7 @@ export default function Home() {
       </section>
 
       {/* Images Section */}
-      <section className="grid grid-cols-2 gap-4 mt-4">
+      <section className="grid grid-cols-2 gap-4 mt-3">
         {file && (
           <>
             <div className="relative">
@@ -147,10 +149,10 @@ export default function Home() {
               />
 
               <button
-                className="absolute top-0 right-0 p-2 text-black bg-yellow-500 hover:bg-yellow-400"
+                className="absolute top-0 right-0 p-3 text-black bg-yellow-500 hover:bg-yellow-400"
                 onClick={() => handleDelete()}
               >
-                <FaTrashAlt className="w-4 h-4 duration-300" />
+                <FaTrashAlt className="w-6 h-6 duration-300" />
               </button>
 
               <div className="absolute left-0 right-0 bottom-0 bg-gray-900 bg-opacity-50 text-white text-md p-2">
@@ -180,7 +182,7 @@ export default function Home() {
                   />
 
                   <button
-                    className="absolute top-0 right-0 p-3 text-black bg-yellow-500"
+                    className="absolute top-0 right-0 p-3 text-black bg-yellow-500 hover:bg-yellow-400"
                     onClick={() => handleDownload()}
                   >
                     <FaDownload className="w-6 h-6 duration-300" />
