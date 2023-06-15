@@ -62,23 +62,29 @@ export default function Home() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const response = await fetch("/api/replicate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: base64Image }),
-    });
 
-    const result = await response.json();
-    console.log(result);
+    try {
+      const response = await fetch("/api/replicate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Image }),
+      });
 
-    if (result.error) {
-      setError(result.error);
+      const result = await response.json();
+      console.log(result);
+
+      if (result.error) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+
+      setOutputImage(result.output);
+    } catch {
+      setError("Something went wrong with your image. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setOutputImage(result.output);
-    setLoading(false);
   };
 
   const handleDownload = () => {
